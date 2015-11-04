@@ -1,0 +1,31 @@
+
+<script id="Grocery_List" type="text/hypertag">
+    <!-- markup shml -->
+    
+    <view name="ItemsView" class="rel scrollable">
+        list:"grocery_list.json",
+        selectable:"paleyellow, paleyellow bold",
+        
+        __selection__:function(element){
+            console.log("The price of " + element.data.item[0] + " is: $" + element.data.item[1]);
+        }
+        
+        <div class="rel">[=item[0]=]
+            
+    <view name="PriceView" class="rel scrollable">                
+    
+        onItemsViewSelection:"%%{self.sibling('ItemsView').__selection__ ;; self.reload({item:target.selection.data.item[0], price:target.selection.data.item[1]}) }",
+    
+        // __load__:function(){
+        //    self.listen(self.sibling('ItemsView'), '__selection__', function(element){
+        //        self.price = element.data.item[1];
+        //        self.item = element.data.item[0];
+        //        console.log("Price: " + self.price);
+        //        console.log("Item: " + self.item);
+        //        
+        //        self.reload();
+        //    });
+        // }
+        
+        <div name="PriceDiv" class="rel">Price of item ([=item=]) is: $ [=price=]
+</script>
