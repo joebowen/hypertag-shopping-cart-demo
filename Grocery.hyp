@@ -1,32 +1,48 @@
 
+
+            
+<script id="GroceryListDraggable" type="text/hypertag">
+    <!-- markup shml -->
+    
+    selectable:"paleyellow, paleyellow bold",
+    drag:"FoodItems",
+    drop:"FoodItems",
+    
+    //on drop i'll add an item to myself and remove it from the checkout
+    __drop__:function(items, child, origin){
+        self.appendItems(items);
+        origin.removeItems(items);
+    }
+</script>
+
 <script id="Grocery_List" type="text/hypertag">
     <!-- markup shml -->
     
+    //I manage a list of items that can be placed in a shopping cart 
+    //with total that updates.
     <view name="ShoppingView" class="rel scrollable">
+        //Available items header
         <div class="rel bold">
             Items:
             
+        //I paint a list of items available for purchase
+        //that can be dragged from-or-to here 
         <view name="ItemsView" 
               class="rel scrollable" 
               height="%%{self.parent.height;;value/2}" 
               style="min-height:300px;">
               
             list:"grocery_list.json",
-            selectable:"paleyellow, paleyellow bold",
-            drag:"FoodItems",
-            drop:"FoodItems",
+            GroceryListDraggable$:true
             
-            __drop__:function(items, child, origin){
-                self.appendItems(items);
-                origin.removeItems(items);
-            },
-            
+            //each of these is a single item for sale
             <div class="rel">
                 <div name="item" class="rel width50 left">
                     [=item[0]=]
                 <div name="price" class="rel width50 right">
-                    $ [=item[1]=]
-           
+                    [='$'+item[1]=]
+          
+        //Items for Checkout header 
         <div class="rel bold">
             Shopping Cart:
                     
@@ -36,47 +52,33 @@
               style="min-height:30px;">
               
             list:[],
-            selectable:"paleyellow, paleyellow bold",
-            drag:"FoodItems",
-            drop:"FoodItems",
-            
-            __drop__:function(items, child, origin){
-                self.appendItems(items);
-                origin.removeItems(items);
-            },
+            GroceryListDraggable$:true
             
             <div class="rel">
                 <div name="item" class="rel width50 left">
                     [=item[0]=]
                 <div name="price" class="rel width50 right">
-                    $ [=item[1]=]
+                    [='$'+item[1]=]
     
         <view name="PriceView" class="rel scrollable">
+            price: 0,
+            
             __load__:function(){
-                self.listen(self.sibling('CartView'), '__drop__', function(items, child, droptype){
-                    self.price = 0;
-                    
-                    for(var i = 0; i != self.sibling('CartView').items.length; i ++)
-                        // Not sure if this is the right way to go about this...
-                        self.price = self.price + Number(self.sibling('CartView').items[i].data.item[1]);
-                    
-                    console.log("Price: " + self.price);
-                    
-                    self.reload();
-                });
+                self.listen(self.sibling('CartView'), '__drop__', self.onItemsChanged);
+                self.listen(self.sibling('ItemsView'), '__drop__', self.onItemsChanged);
+            },
+            
+            onItemsChanged:function(items, child, droptype){
+                self.price = 0;
                 
-                self.listen(self.sibling('ItemsView'), '__drop__', function(items, child, droptype){
-                    self.price = 0;
-                    
-                    for(var i = 0; i != self.sibling('CartView').items.length; i ++)
-                        // Not sure if this is the right way to go about this...
-                        self.price = self.price + Number(self.sibling('CartView').items[i].data.item[1]);
-                    
-                    console.log("Price: " + self.price);
-                    
-                    self.reload();
-                });
+                for(var i = 0; i != self.sibling('CartView').items.length; i ++)
+                    // Not sure if this is the right way to go about this...
+                    self.price += Number(self.sibling('CartView').items[i].data.item[1]);
+                
+                console.log("Total: $" + self.price);
+                
+                self.reload();
             }
             
-            <div name="PriceDiv" class="rel">Total is: $ [=price=]
+            <div name="PriceDiv" class="rel">Total is: [='$'+price=]
 </script>
