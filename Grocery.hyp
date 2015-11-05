@@ -2,30 +2,81 @@
 <script id="Grocery_List" type="text/hypertag">
     <!-- markup shml -->
     
-    <view name="ItemsView" class="rel scrollable">
-        list:"grocery_list.json",
-        selectable:"paleyellow, paleyellow bold",
-        
-        __selection__:function(element){
-            console.log("The price of " + element.data.item[0] + " is: $" + element.data.item[1]);
-        }
-        
-        <div class="rel">[=item[0]=]
+    <view name="ShoppingView" class="rel scrollable">
+        <div class="rel bold">
+            Items:
             
-    <view name="PriceView" class="rel scrollable">                
+        <view name="ItemsView" 
+              class="rel scrollable" 
+              height="%%{self.parent.height;;value/2}" 
+              style="min-height:300px;">
+              
+            list:"grocery_list.json",
+            selectable:"paleyellow, paleyellow bold",
+            drag:"FoodItems",
+            drop:"FoodItems",
+            
+            __drop__:function(items, child, origin){
+                self.appendItems(items);
+                origin.removeItems(items);
+            },
+            
+            <div class="rel">
+                <div name="item" class="rel width50 left">
+                    [=item[0]=]
+                <div name="price" class="rel width50 right">
+                    $ [=item[1]=]
+           
+        <div class="rel bold">
+            Shopping Cart:
+                    
+        <view name="CartView" 
+              class="rel scrollable paleyellow" 
+              height="%%{self.parent.height;;value/2}" 
+              style="min-height:30px;">
+              
+            list:[],
+            selectable:"paleyellow, paleyellow bold",
+            drag:"FoodItems",
+            drop:"FoodItems",
+            
+            __drop__:function(items, child, origin){
+                self.appendItems(items);
+                origin.removeItems(items);
+            },
+            
+            <div class="rel">
+                <div name="item" class="rel width50 left">
+                    [=item[0]=]
+                <div name="price" class="rel width50 right">
+                    $ [=item[1]=]
     
-        onItemsViewSelection:"%%{self.sibling('ItemsView').__selection__ ;; self.reload({item:target.selection.data.item[0], price:target.selection.data.item[1]}) }",
-    
-        // __load__:function(){
-        //    self.listen(self.sibling('ItemsView'), '__selection__', function(element){
-        //        self.price = element.data.item[1];
-        //        self.item = element.data.item[0];
-        //        console.log("Price: " + self.price);
-        //        console.log("Item: " + self.item);
-        //        
-        //        self.reload();
-        //    });
-        // }
-        
-        <div name="PriceDiv" class="rel">Price of item ([=item=]) is: $ [=price=]
+        <view name="PriceView" class="rel scrollable">
+            __load__:function(){
+                self.listen(self.sibling('CartView'), '__drop__', function(items, child, droptype){
+                    self.price = 0;
+                    
+                    for(var i = 0; i != self.sibling('CartView').items.length; i ++)
+                        // Not sure if this is the right way to go about this...
+                        self.price = self.price + Number(self.sibling('CartView').items[i].data.item[1]);
+                    
+                    console.log("Price: " + self.price);
+                    
+                    self.reload();
+                });
+                
+                self.listen(self.sibling('ItemsView'), '__drop__', function(items, child, droptype){
+                    self.price = 0;
+                    
+                    for(var i = 0; i != self.sibling('CartView').items.length; i ++)
+                        // Not sure if this is the right way to go about this...
+                        self.price = self.price + Number(self.sibling('CartView').items[i].data.item[1]);
+                    
+                    console.log("Price: " + self.price);
+                    
+                    self.reload();
+                });
+            }
+            
+            <div name="PriceDiv" class="rel">Total is: $ [=price=]
 </script>
