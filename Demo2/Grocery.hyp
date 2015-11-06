@@ -1,0 +1,100 @@
+<script id="GroceryListDraggable" type="text/hypertag">
+    <!-- markup shml -->
+    
+    selectable:"paleyellow, paleyellow bold",
+    drag:"FoodItems",
+    drop:"FoodItems",
+    
+    //on drop i'll add an item to myself to self and remove it from the origin
+    //list.
+    __drop__:function(items, child, origin){
+        self.appendItems(items);
+        origin.removeItems(items);
+    }
+</script>
+
+<style type="text/constants">
+    Grocery_List.footerHeight{30}
+</style>
+
+<script id="Grocery_List" type="text/hypertag">
+    <!-- markup shml -->
+    
+    //I manage a list of items that can be placed in a shopping cart 
+    //with total that updates.
+    <view name="ShoppingView"
+          class="rel"
+          width="%%{self.parent.width}"
+          height="%%{self.parent.height ;; value-self.offsetTop-###footerHeight###}">
+          
+        //Items for Checkout header 
+        <view class="cell bold rel"
+              width="%%{self.parent.width ;; (value/3)*2}"
+              height="%%{self.parent.height}">
+              
+            <div class="bigpadded evenbigger buttonGradient rounded shadowed">
+                Shopping Cart:
+            
+            //I paint a list of items available for purchase
+            //that can be dragged from-or-to here 
+            <view name="ItemsView" 
+                  class="cell scrollable rel"
+                  width="%%{self.parent.width}"
+                  height="%%{self.parent.height ;; value-self.offsetTop}">
+                  
+                list:"grocery_list.json",
+                GroceryListDraggable$:true
+                
+                //each of these is a single item for sale
+                <div class="rel">
+                    <div name="item" class="cell width50 left">
+                        [=item[0]=]
+                    <div name="price" class="cell width50 right">
+                        [='$'+item[1]=]
+               
+        //I paint a list of items that have been moved into the cart
+        //for sale.  Items can been dragged from-or-to here.
+        <view name="CartView" 
+              class="cell scrollable paleyellow"
+              width="%%{self.parent.width ;; value/3}"
+              height="%%{self.parent.height}">
+              
+            list:[],
+            GroceryListDraggable$:true
+            
+            //Each of these is a single item in the shopping cart.
+            <div class="rel">
+                <div name="item" class="cell width50 left">
+                    [=item[0]=]
+                <div name="price" class="cell width50 right">
+                    [='$'+item[1]=]
+    
+    //I display the total cost of the items in the cart.
+    <view name="PriceView" 
+          class="rel scrollable fgwhite black"
+          height="###footerHeight###" 
+          width="%%{self.parent.width}">
+        price: 0,
+        
+        //I listen to the drop method of both views to determine when
+        //an item has been moved.
+        __load__:function(){
+            self.listen(self.root.named('CartView'), '__drop__', self.onItemsChanged);
+            self.listen(self.root.named('ItemsView'), '__drop__', self.onItemsChanged);
+        },
+        
+        //I calculate the total cost of the items in the CartView.
+        onItemsChanged:function(items, child, droptype){
+            self.price = 0;
+            
+            for(var i = 0; i != self.root.named('CartView').items.length; i ++)
+                self.price += Number(self.root.named('CartView').items[i].data.item[1]);
+            
+            console.log("Total: $" + self.price);
+            
+            self.reload();
+        }
+        
+        //I display the total cost of the items in the CartView
+        <div name="PriceDiv" class="rel">Total is: [='$'+price=]
+</script>
