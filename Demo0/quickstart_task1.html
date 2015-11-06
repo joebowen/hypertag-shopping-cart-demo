@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<!-- 
+    Hypertag Quick Start
+    More info at http://hypertag.io
+    Hypertag is licensed under the GPLv3.
+-->
+    
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>New Hypertag.js Application</title>
+
+        <link href="http://cdn.hypertag.io/verbs.css" media="all" rel="stylesheet" type="text/css"></link>
+        <script src="http://cdn.hypertag.io/Hypertag.min.js" type="text/javascript"></script>
+        <script url="http://cdn.hypertag.io/builtins.hyp" type="library/hypertag"></script>
+    </head>
+          
+    <body>
+        <script id="Grocery_List" type="text/hypertag">
+            <!-- markup shml -->
+            
+            <view name="ItemsView" class="rel scrollable">
+                list:"grocery_list.json",
+                selectable:"paleyellow, paleyellow bold",
+                
+                __selection__:function(element){
+                    console.log("The price of " + element.data.item[0] + " is: $" + element.data.item[1]);
+                }
+                
+                <div class="rel">[=item[0]=]
+                    
+            <view name="PriceView" class="rel scrollable">                
+                __init__:function(){
+                    self.listen(self.sibling('ItemsView'), '__selection__', function(element){
+                        self.price = element.data.item[1];
+                        self.item = element.data.item[0];
+                        console.log("Price: " + self.price);
+                        console.log("Item: " + self.item);
+                        
+                        self.child('PriceView2').reload();
+                    });
+                }
+                
+                <view name="PriceView2">
+                    <div name="PriceDiv" class="rel">Price of item ([=self.parent.item=]) is: $ [=self.parent.price=]
+        </script>
+
+        <div class="hypertag" template="Grocery_List" traits="SizedToWindow"/>
+    </body>
+</html>
