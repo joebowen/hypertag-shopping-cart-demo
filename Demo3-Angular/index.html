@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8"/>
+		<title>Grocery Cart</title>
+
+		<!-- Google web fonts -->
+		<link href="http://fonts.googleapis.com/css?family=PT+Sans:400,700" rel='stylesheet' />
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+		<!-- The main CSS file -->
+		<link href="style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+
+		<form name="grocery_cart" class="ShoppingCartForm" ng-app ng-controller="mycart">
+			<h1>Items</h1>
+
+			<ul name="items" class="ShoppingCartList">
+				<!-- The items will be inserted here -->
+				<li ng-repeat="item in items">
+					<label>
+						<input type="checkbox" ng-model="item.selected" value="1" name="{{item.title}}" />
+						{{item.title}}<span>${{item.price}}</span>
+					</label>
+				</li>
+			</ul>
+
+			<input name="add_to_cart" class="ShoppingCartButton" type="button" ng-click="add_to_cart()" value="Add to Shopping Cart" />
+			
+			<h1>Shopping Cart</h1>
+
+			<ul name="shopping_cart" class="ShoppingCartList">
+				<!-- The shopping cart items will be inserted here -->
+				<li ng-repeat="item in shopping_cart">
+					<label>
+						<input type="checkbox" ng-model="item.selected" value="1" name="{{item.title}}" />
+						{{item.title}}<span>${{item.price}}</span>
+					</label>
+				</li>
+			</ul>
+
+			<p name="total" class="ShoppingCartTotal">total: <span>${{total()}}</span></p>
+			
+			<input name="remove_from_cart" class="ShoppingCartButton" type="button" ng-click="remove_from_cart()" value="Remove from Shopping Cart" />
+
+			<input type="submit"  class="ShoppingCartButton" name="order" value="Order"/>
+
+		</form>
+
+		<!-- The single AngularJS include -->
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.0.5/angular.min.js"></script>
+		<script src="script.js"></script>
+
+	</body>
+</html>

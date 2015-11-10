@@ -1,0 +1,9 @@
+<ul name="items" class="ShoppingCartList">
+	<!-- The items will be inserted here -->
+	<li ng-repeat="item in items">
+		<label>
+			<input type="checkbox" ng-model="item.selected" value="1" name="{{item.title}}" />
+			{{item.title}}<span>${{item.price}}</span>
+		</label>
+	</li>
+</ul>
