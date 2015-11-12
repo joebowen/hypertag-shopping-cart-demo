@@ -48,6 +48,7 @@ app.directive('ngGroceryCartList', function() {
   return {
     restrict: 'A',
     templateUrl: 'cart-list-template.html',
+    require: '^ngGroceryCart',
     scope: {
         title: '@',
         name: '@',
