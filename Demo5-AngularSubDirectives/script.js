@@ -7,56 +7,50 @@ app.directive('ngGroceryCart', function() {
     scope: {},
     controller: ['$scope', function($scope) {
             var panes = $scope.panes = [];
-        
-            $scope.items=[
-                { title: 'web development', price: 200},
-                { title: 'web design', price: 250},
-                { title: 'photography', price: 100},
-                { title: 'coffee drinking', price: 10}];
-            $scope.shopping_cart=[];
             
             $scope.add_to_cart=function(){
-                for (var i = $scope.items.length - 1; i >= 0; i--){
-                    var s = $scope.items[i];
+                for (var i = panes[0].items.length - 1; i >= 0; i--){
+                    var s = panes[0].items[i];
                     if(s.selected)
                     {
-                        $scope.shopping_cart = $scope.shopping_cart.concat([s]);
+                        panes[1].items = panes[1].items.concat([s]);
                         
-                        var index = $scope.items.indexOf(s);
+                        var index = panes[0].items.indexOf(s);
                         
                         if (index > -1) {
-                            $scope.items.splice(index, 1);
+                            panes[0].items.splice(index, 1);
                         }
                     }
                 }
             };
             
             $scope.remove_from_cart=function(){
-                for (var i = $scope.shopping_cart.length - 1; i >= 0; i--){
-                    var s = $scope.shopping_cart[i];
+                for (var i = panes[1].items.length - 1; i >= 0; i--){
+                    var s = panes[1].items[i];
                     if(s.selected)
                     {
-                        $scope.items = $scope.items.concat([s]);
+                        panes[0].items = panes[0].items.concat([s]);
                         
-                        var index = $scope.shopping_cart.indexOf(s);
+                        var index = panes[1].items.indexOf(s);
                         
                         if (index > -1) {
-                            $scope.shopping_cart.splice(index, 1);
+                            panes[1].items.splice(index, 1);
                         }
                     }
                 }
             };
             
-            $scope.total=function(){
-                var t = 0;
-                angular.forEach($scope.shopping_cart, function(s){
-                    t+=s.price;
-                });
-                return t;
-            };
-            
             $scope.addPane=function(pane) {
                 panes.push(pane);
+            };
+            
+            $scope.total=function(name){
+                child = $.grep(panes, function(e){ return e.name == name; })[0];
+                
+                if (child)
+                    return child.total();
+                else
+                    return 0;
             };
         }],
     }
@@ -68,13 +62,41 @@ app.directive('ngGroceryCartList', function() {
     restrict: 'A',
     templateUrl: 'cart-list-template.html',
     scope: {
-        title: '@' 
+        title: '@',
+        name: '@',
+        initfile: '@',
     },
     link: function(scope, element, attrs, cartCtrl) {
-        cartCtrl.addPane(scope);
+        scope.$parent.addPane(scope);
+        
+        scope.init_json(attrs.initfile)
     },
-    controller: ['$scope', function($scope) {
+    controller: ['$scope', '$http', function($scope, $http) {
+            $scope.init_json=function(initfile){
+                if (initfile)
+                {
+                    $http.get(initfile)
+                       .then(function(res){
+                            $scope.items = [];
+                            angular.forEach(res.data, function(s){
+                                item = {'title': s[0], 'price': s[1]};
+                                $scope.items = $scope.items.concat(item);
+                            });
+                        });
+                }
+                else
+                {
+                    $scope.items=[];
+                }
+            }
             
+            $scope.total=function(){
+                var t = 0;
+                angular.forEach($scope.items, function(s){
+                    t+=s.price;
+                });
+                return t;
+            };
     
         }],
     }

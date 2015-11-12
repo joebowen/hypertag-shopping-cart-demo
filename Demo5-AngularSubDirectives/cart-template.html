@@ -1,11 +1,11 @@
 <form name="grocery_cart" class="ShoppingCartForm">
-	<div ng-grocery-cart-list title="Items"></div>
+	<div ng-grocery-cart-list initfile="grocery_list.json" name="items" title="Items"></div>
 
 	<input name="add_to_cart" class="ShoppingCartButton" type="button" ng-click="add_to_cart()" value="Add to Shopping Cart" />
 	
-	<div ng-grocery-cart-list title="Shopping Cart"></div>
+	<div ng-grocery-cart-list name="cart" title="Shopping Cart"></div>
 
-	<p name="total" class="ShoppingCartTotal">total: <span>${{total()}}</span></p>
+	<p name="total" class="ShoppingCartTotal">total: <span>${{total('cart')}}</span></p>
 	
 	<input name="remove_from_cart" class="ShoppingCartButton" type="button" ng-click="remove_from_cart()" value="Remove from Shopping Cart" />
 
