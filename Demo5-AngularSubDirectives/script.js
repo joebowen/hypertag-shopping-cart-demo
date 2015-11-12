@@ -8,33 +8,20 @@ app.directive('ngGroceryCart', function() {
     controller: ['$scope', function($scope) {
             var panes = $scope.panes = [];
             
-            $scope.add_to_cart=function(){
-                for (var i = panes[0].items.length - 1; i >= 0; i--){
-                    var s = panes[0].items[i];
+            $scope.move_item=function(from_name, to_name){
+                from = $.grep(panes, function(e){ return e.name == from_name; })[0];
+                to = $.grep(panes, function(e){ return e.name == to_name; })[0];
+                
+                for (var i = from.items.length - 1; i >= 0; i--){
+                    var s = from.items[i];
                     if(s.selected)
                     {
-                        panes[1].items = panes[1].items.concat([s]);
+                        to.items = to.items.concat([s]);
                         
-                        var index = panes[0].items.indexOf(s);
-                        
-                        if (index > -1) {
-                            panes[0].items.splice(index, 1);
-                        }
-                    }
-                }
-            };
-            
-            $scope.remove_from_cart=function(){
-                for (var i = panes[1].items.length - 1; i >= 0; i--){
-                    var s = panes[1].items[i];
-                    if(s.selected)
-                    {
-                        panes[0].items = panes[0].items.concat([s]);
-                        
-                        var index = panes[1].items.indexOf(s);
+                        var index = from.items.indexOf(s);
                         
                         if (index > -1) {
-                            panes[1].items.splice(index, 1);
+                            from.items.splice(index, 1);
                         }
                     }
                 }
